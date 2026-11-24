@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" data-type="software">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#111719">
+  <meta name="description" content="Four webcam tools that share one Python computer vision backend.">
+  <meta name="page-type" content="software">
+  <meta name="site-kind" content="software">
+  <title>Object Motion Lab | Webcam Studio</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/studio.css">
+  <script type="module" src="/static/studio.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#studio">Skip to the studio</a>
+  <header class="topbar">
+    <div class="wrap bar-inner">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span> Webcam Studio</a>
+    </div>
+  </header>
+  <main class="wrap" id="studio" data-mode="objects" tabindex="-1">
+    <header class="intro">
+      <h1 id="title">Object Motion Lab</h1>
+      <p id="description">Watch your camera feed with live labels for objects and outlines for moving areas.</p>
+    </header>
+    <nav class="modes" aria-label="Webcam Studio apps">
+      <a href="/object-motion-lab/" aria-current="page">Objects and motion</a>
+      <a href="/gesture-voice-lab/">Gesture to voice</a>
+      <a href="/scene-caption-camera/">Scene captions</a>
+      <a href="/kinetic-silhouette/">Particle silhouette</a>
+    </nav>
+    <div class="workspace">
+      <section class="camera surface" aria-labelledby="camera-title">
+        <header class="surface-header">
+          <h2 id="camera-title">Camera preview</h2>
+          <span class="camera-status" id="camera-status" role="status" data-state="off">Camera off</span>
+        </header>
+        <div class="stage" id="stage">
+          <video id="video" autoplay muted playsinline aria-label="Live webcam preview" hidden></video>
+          <img id="artwork" alt="Particle landscape showing your silhouette" hidden>
+          <canvas id="overlay" aria-hidden="true" hidden></canvas>
+          <div class="placeholder" id="placeholder">
+            <span class="reticle" aria-hidden="true"></span>
+            <p>Your camera preview will appear here.</p>
+          </div>
+        </div>
+        <div class="camera-toolbar">
+          <div class="camera-controls">
+            <button type="button" class="primary" id="camera-toggle" aria-describedby="camera-privacy">Start camera</button>
+            <label class="check"><input id="mirror-camera" type="checkbox" checked> Mirror camera</label>
+          </div>
+          <p id="camera-privacy" class="hint">Sampled frames go to the Python server for processing in memory. The session clears when you stop.</p>
+        </div>
+        <p class="message" id="message" role="alert" hidden></p>
+      </section>
+      <section class="surface panel" id="panel-objects" aria-labelledby="objects-title">
+        <header class="surface-header"><h2 id="objects-title">Detection</h2></header>
+        <div class="panel-content">
+          <label class="field" for="detection-mode">Detection mode
+            <select id="detection-mode">
+              <option value="both">Objects and motion</option>
+              <option value="objects">Objects only</option>
+              <option value="motion">Motion only</option>
+            </select>
+          </label>
+          <label class="check"><input id="show-mask" type="checkbox"> Show motion mask</label>
+          <img class="mask" id="mask" alt="Binary mask of changes between frames" hidden>
+          <div class="results" id="object-readout">
+            <h3>Detected objects</h3>
+            <p class="hint" id="object-status">Waiting for camera.</p>
+            <ul id="object-list" class="object-list" aria-label="Detected objects and confidence"></ul>
+          </div>
+          <p class="motion-note" id="motion-count">Motion regions <output>—</output></p>
+        </div>
+      </section>
+      <section class="surface panel" id="panel-gesture" aria-labelledby="gesture-title" hidden>
+        <header class="surface-header"><h2 id="gesture-title">Word sequence</h2></header>
+        <div class="panel-content">
+          <p class="hint">Hold one pose for 1.5 seconds to add a word. Lower your hands between poses.</p>
+          <p class="readout" id="gesture-status">Waiting for camera.</p>
+          <p id="words" class="transcript" aria-live="polite">No words yet.</p>
+          <div class="actions">
+            <button type="button" id="speak-words" disabled>Speak sequence</button>
+            <button type="button" id="clear-words" disabled>Clear sequence</button>
+          </div>
+          <label class="check"><input id="speak-each" type="checkbox"> Speak each new word</label>
+          <details>
+            <summary>Supported poses</summary>
+            <dl>
+              <div><dt>Peace sign</dt><dd>Use</dd></div>
+              <div><dt>One open palm</dt><dd>Technology</dd></div>
+              <div><dt>Index finger up</dt><dd>For</dd></div>
+              <div><dt>Thumbs up</dt><dd>Help</dd></div>
+              <div><dt>Thumbs down</dt><dd>Not</dd></div>
+              <div><dt>Closed fist</dt><dd>War</dd></div>
+              <div><dt>Index, pinky, and thumb extended</dt><dd>I love you</dd></div>
+              <div><dt>Two open palms for 2 seconds</dt><dd>Speak sequence</dd></div>
+            </dl>
+          </details>
+        </div>
+      </section>
+      <section class="surface panel" id="panel-caption" aria-labelledby="caption-title" hidden>
+        <header class="surface-header"><h2 id="caption-title">Scene caption</h2></header>
+        <div class="panel-content">
+          <p class="readout" id="caption" aria-live="polite">No caption yet.</p>
+          <div class="actions">
+            <button type="button" id="describe" disabled>Describe frame</button>
+            <button type="button" id="speak-caption" disabled>Speak caption</button>
+          </div>
+          <label class="check"><input id="auto-caption" type="checkbox"> Describe a frame every 4 seconds</label>
+          <p class="hint" id="caption-status" role="status">Start your camera to describe a frame.</p>
+        </div>
+      </section>
+      <section class="surface panel" id="panel-art" aria-labelledby="art-title" hidden>
+        <header class="surface-header"><h2 id="art-title">Silhouette motion</h2></header>
+        <div class="panel-content">
+          <p class="hint">Stand in view, then move to turn that part of your silhouette gold.</p>
+          <p class="readout" id="art-status">Waiting for camera.</p>
+          <label class="field" for="body-motion">Body in motion <output id="body-percent">0%</output>
+            <meter id="body-motion" min="0" max="100" value="0"></meter>
+          </label>
+          <label class="check"><input id="view-mask" type="checkbox"> Show segmentation mask</label>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

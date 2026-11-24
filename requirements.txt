@@ -1,0 +1,9 @@
+opencv-contrib-python==4.13.0.92
+mediapipe==0.10.35
+onnxruntime==1.32.0
+tokenizers==0.23.3
+Pillow==13.0.0
+fastapi==0.165.0
+uvicorn==0.54.0
+websockets==16.0
+httpx2==2.16.2

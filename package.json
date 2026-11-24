@@ -1,0 +1,10 @@
+{
+  "name": "python-webcam-studio",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node scripts/studio.mjs",
+    "test": "node --check web/studio.js && node --test test_mirror.test.mjs"
+  }
+}
