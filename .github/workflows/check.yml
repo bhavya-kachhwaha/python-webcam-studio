@@ -20,3 +20,19 @@ jobs:
           docker run --rm -d --name webcam-check -p 127.0.0.1:7860:7860 python-webcam-studio
           trap 'docker stop webcam-check' EXIT
           curl --fail --retry 10 --retry-connrefused http://127.0.0.1:7860/object-motion-lab/ -o /dev/null
+          docker exec -i webcam-check python - <<'PY'
+          import json
+          import cv2
+          import numpy as np
+          from websockets.sync.client import connect
+          modes = {'object-motion-lab': 'objects', 'gesture-voice-lab': 'hands',
+                   'scene-caption-camera': 'caption', 'kinetic-silhouette': 'art'}
+          jpeg = cv2.imencode('.jpg', np.full((240, 320, 3), 90, dtype=np.uint8))[1].tobytes()
+          for mode, field in modes.items():
+              with connect('ws://127.0.0.1:7860/ws/' + mode, origin='http://127.0.0.1:7860') as socket:
+                  assert json.loads(socket.recv(timeout=60))['type'] == 'ready'
+                  socket.send(jpeg)
+                  result = json.loads(socket.recv(timeout=120))
+                  assert result['type'] == 'result' and field in result, (mode, result.get('message'))
+                  print(f'{mode}: native model produced {field}', flush=True)
+          PY

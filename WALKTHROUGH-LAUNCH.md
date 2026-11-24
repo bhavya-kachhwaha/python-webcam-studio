@@ -52,7 +52,7 @@ Running npm start calls [scripts/studio.mjs](scripts/studio.mjs). Node reads the
 
 - **1** Use a Debian-based CPython 3.12 image that accepts the pinned Linux wheels.
 - **3** Set the working directory for dependency installation and app startup.
-- **4** Install certificate and runtime libraries needed by the model downloads and native vision packages.
+- **4** Install certificates and shared libraries, including EGL and OpenGL ES, needed by the native Linux vision packages.
 - **5** Remove package-index data after installing the libraries to reduce the final image size.
 - **6** Copy the package pins first so Docker can reuse the dependency layer when app code changes.
 - **7** Install Python dependencies into the image without leaving pip's download cache.
@@ -92,5 +92,21 @@ Running npm start calls [scripts/studio.mjs](scripts/studio.mjs). Node reads the
 - **20** Start a container and bind its port to the runner's loopback interface.
 - **21** Stop that container when the check finishes.
 - **22** Retry the initial HTTP request until the server begins accepting connections and the object app route responds.
+- **23** Run a Python WebSocket smoke test inside the started image.
+- **24** Import JSON parsing to read the server's replies.
+- **25** Import OpenCV to encode a generated image.
+- **26** Import NumPy to allocate the image.
+- **27** Import the synchronous WebSocket test client.
+- **28** Name the object and gesture routes and the output fields they should return.
+- **29** Add the corresponding caption and silhouette checks.
+- **30** Encode a small, uniform image as a JPEG without using a webcam.
+- **31** Run the same exchange once for each app mode.
+- **32** Open the live WebSocket with the corresponding same-origin header.
+- **33** Wait for the real session and model setup to acknowledge readiness.
+- **34** Send the generated JPEG through the same input path as the website.
+- **35** Read the response produced by the native Linux pipeline.
+- **36** Check that processing succeeded and produced the expected field.
+- **37** Print the mode that passed so failures point to a specific pipeline.
+- **38** End the Python program embedded in this check.
 
 The public portfolio deployment routes are separate from this local launcher. See [the web server guide](WALKTHROUGH-SERVER.md) for how the HTTP page and WebSocket endpoint meet the Python processors.
