@@ -17,9 +17,9 @@ jobs:
       - run: docker build -t python-webcam-studio .
       - run: docker run --rm python-webcam-studio python -m unittest -v
       - run: |
-          docker run --rm -d --name webcam-check -p 127.0.0.1:7860:7860 python-webcam-studio
-          trap 'docker stop webcam-check' EXIT
-          curl --fail --retry 10 --retry-connrefused http://127.0.0.1:7860/object-motion-lab/ -o /dev/null
+          docker run -d --name webcam-check -p 127.0.0.1:7860:7860 python-webcam-studio
+          trap 'docker logs webcam-check; docker rm -f webcam-check' EXIT
+          curl --fail --silent --show-error --retry 10 --retry-all-errors --max-time 5 http://127.0.0.1:7860/object-motion-lab/ -o /dev/null
           docker exec -i webcam-check python - <<'PY'
           import json
           import cv2

@@ -90,8 +90,8 @@ Running npm start calls [scripts/studio.mjs](scripts/studio.mjs). Node reads the
 - **18** Run the Python tests inside that same image.
 - **19** Start a shell step that checks the running container.
 - **20** Start a container and bind its port to the runner's loopback interface.
-- **21** Stop that container when the check finishes.
-- **22** Retry the initial HTTP request until the server begins accepting connections and the object app route responds.
+- **21** Print the container's logs and remove the test instance when the check finishes.
+- **22** Retry transient startup errors, including connection resets, until the object app route responds.
 - **23** Run a Python WebSocket smoke test inside the started image.
 - **24** Import JSON parsing to read the server's replies.
 - **25** Import OpenCV to encode a generated image.
